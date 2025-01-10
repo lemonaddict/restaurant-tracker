@@ -3,9 +3,10 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { User } = require('../models');
 const authenticateToken = require('../middleware/auth'); // JWT middleware
-const { regulateTcoin } = require('../controllers/userController'); // Middleware for authentication
+const { getUserDetails, regulateTcoin } = require('../controllers/userController');  // Middleware for authentication
 
 const router = express.Router();
+router.get('/me', authenticateToken, getUserDetails);
 
 // Update user profile (PUT /api/users/me)
 router.put('/me', authenticateToken, async (req, res) => {

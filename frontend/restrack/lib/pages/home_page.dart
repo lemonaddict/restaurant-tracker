@@ -1,8 +1,8 @@
 // lib/pages/home_page.dart
 import 'package:flutter/material.dart';
 import 'package:restrack/config/config.dart';
+import 'package:restrack/pages/choose_date_page.dart';
 import 'package:restrack/pages/profile_page.dart';
-import 'package:restrack/pages/reservation_page.dart';
 import 'package:restrack/services/auth_service.dart';
 
 class HomePage extends StatelessWidget {
@@ -99,12 +99,12 @@ class HomePage extends StatelessWidget {
               title: const Text('Reservations'),
               onTap: () {
                 Navigator.pop(context); // Close drawer
-                // Navigator.push(
-                //   // context,
-                //   // // MaterialPageRoute(
-                //   // //   builder: (context) => ReservationPage(authService: authService),
-                //   // // ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChooseDatePage(authService: authService),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -112,12 +112,12 @@ class HomePage extends StatelessWidget {
               title: const Text('Profile'),
               onTap: () {
                 Navigator.pop(context); // Close drawer
-                // Navigator.push(
-                //   context,
-                //   // MaterialPageRoute(
-                //   //   builder: (context) => ProfilePage(authService: authService),
-                //   // ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfilePage(authService: authService),
+                  ),
+                );
               },
             ),
             const Divider(),

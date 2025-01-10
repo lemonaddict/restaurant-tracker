@@ -38,4 +38,25 @@ const regulateTcoin = async (req, res) => {
   }
 };
 
-module.exports = { regulateTcoin };
+const getUserDetails = async (req, res) => {
+  const userId = req.user.user_id; 
+  try {
+    const user = await User.findByPk(userId, {
+      attributes: ['name', 'email', 'telephone_number'], 
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    return res.status(200).json({
+      user: {
+        name: user.name,
+        email: user.email,
+        telephone_number: user.telephone_number,
+      },
+    });
+  } catch (error) {
+    console.error('Error retrieving user details:', error);
+    return res.status(500).json({ error: 'Failed to retrieve user details.' });
+  }
+};
+module.exports = { getUserDetails, regulateTcoin };
