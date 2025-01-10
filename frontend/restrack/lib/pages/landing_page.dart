@@ -12,9 +12,9 @@ class LandingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/restaurant.jpg'), // Make sure to add this image
+            image: AssetImage('assets/resto.jpg'), // Make sure to add this image
             fit: BoxFit.cover,
           ),
         ),
@@ -63,7 +63,7 @@ class LandingPage extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Colors.orange.shade300,
                       minimumSize: Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),

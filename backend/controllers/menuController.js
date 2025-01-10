@@ -48,4 +48,13 @@ const unrecommendMenu = async (req, res) => {
   }
 };
 
-module.exports = { recommendMenu, unrecommendMenu };
+const getAllMenus = async (req, res) => {
+  try {
+    const menus = await Menu.findAll();
+    return res.status(200).json(menus);
+  } catch (error) {
+    console.error('Error retrieving menus:', error);
+    return res.status(500).json({ error: 'Failed to retrieve menus.' });
+  }
+};
+module.exports = { recommendMenu, unrecommendMenu, getAllMenus };

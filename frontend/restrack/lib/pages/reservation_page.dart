@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:restrack/services/reservation_service.dart';
 
 class ReservationPage extends StatelessWidget {
   final List<Map<String, dynamic>> orderedItems;
@@ -14,6 +15,26 @@ class ReservationPage extends StatelessWidget {
     required this.date,
     required this.tableNumber,
   });
+
+  final ReservationService reservationService = ReservationService();
+
+  Future<void> _createReservation(BuildContext context) async {
+    try {
+      await reservationService.createReservation(date, day, tableNumber, orderedItems.cast<String>());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Reservation created successfully')),
+      );
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/home',
+        (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create reservation: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +56,7 @@ class ReservationPage extends StatelessWidget {
             Text('Date: $date'),
             Text('Table Number: $tableNumber'),
             Divider(),
-            Text('Deposit: 15000 T Coin'),
+            Text('Deposit: 15000'),
             Divider(),
             Text(
               'Ordered Items:',
@@ -46,9 +67,9 @@ class ReservationPage extends StatelessWidget {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${item['number']}. ${item['menu']}'),
+                  Text('${item['menu']}'),
                   Text('Qty: ${item['qty']}'),
-                  Text('Total: \$${item['totalPrice'].toStringAsFixed(2)}'),
+                  Text('Total: Rp ${item['totalPrice'].toStringAsFixed(2)}'),
                 ],
               );
             }).toList(),
@@ -57,19 +78,13 @@ class ReservationPage extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/home',
-                    (route) => false,
-                  );
-                },
+                onPressed: () => _createReservation(context),
                 child: Text('Reserve'),
               ),
             ),
             SizedBox(height: 10),
             Text(
-              'Total Cost: \$${totalCost.toStringAsFixed(2)}',
+              'Total Cost: Rp ${(totalCost + 15000).toStringAsFixed(2)}',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],

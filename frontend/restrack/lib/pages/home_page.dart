@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:restrack/config/config.dart';
 import 'package:restrack/pages/choose_date_page.dart';
 import 'package:restrack/pages/profile_page.dart';
+import 'package:restrack/pages/team_page.dart'; // Import the team page
 import 'package:restrack/services/auth_service.dart';
 
 class HomePage extends StatelessWidget {
@@ -116,6 +117,19 @@ class HomePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ProfilePage(authService: authService),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('About'),
+              onTap: () {
+                Navigator.pop(context); // Close drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TeamPage(), // Navigate to TeamPage 
                   ),
                 );
               },

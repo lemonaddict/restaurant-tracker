@@ -38,9 +38,9 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfilePage(authService: authService),
         // '/editProfile': (context) => EditProfilePage(),
         '/chooseDate': (context) => ChooseDatePage(authService: authService),
-        '/chooseTable': (context) => ChooseTablePage(authService: authService),
-        '/meetOurTeam': (context) => const MeetOurTeamPage(),
-        '/menu': (context) => MenuPage(),
+        '/chooseTable': (context) => ChooseTablePage(authService: authService, date: '', time: ''),
+        '/meetOurTeam': (context) => const TeamPage(),
+        '/menu': (context) => MenuPage(authService: authService, date: '', time: '', tableNumber: '',),
         '/home': (context) => HomePage(authService: authService),
       },
       // Tambahkan fallback jika rute tidak ditemukan

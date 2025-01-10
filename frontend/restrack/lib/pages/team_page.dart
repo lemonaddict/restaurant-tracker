@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 
-class MeetOurTeamPage extends StatelessWidget {
-  const MeetOurTeamPage({Key? key}) : super(key: key);
+class TeamPage extends StatelessWidget {
+  const TeamPage({Key? key}) : super(key: key);
 
   final List<Map<String, String>> teamMembers = const [
     {
-      "name": "Daniel Ebenezer Budiharto",
-      "role": "Project Manager",
-      "image": "assets/images/alice.png",
+      "name": " Daniel Ebenezer Budiharto",
+      "role": "Back-End Developer",
+      "image": "assets/Foto-budi.jpg",
+    },
+    {
+      "name": "Stephen Wijaya Utama ",
+      "role": "Front-End Developer",
+      "image": "assets/Foto-stephen.jpg",
     },
     {
       "name": "Muhammad Rafie Kurnia",
-      "role": "Lead Developer",
-      "image": "assets/images/bob.png",
-    },
-    {
-      "name": "Stephen Wijaya Utama",
-      "role": "UI/UX Designer",
-      "image": "assets/images/clara.png",
+      "role": "Front-end Developer",
+      "image": "assets/Foto-rafie.jpg",
     },
     {
       "name": "Salomo Agung Adrianto Rehmina Hutapea",
-      "role": "Quality Analyst",
-      "image": "assets/images/david.png",
+      "role": "System  Analyst",
+      "image": "assets/Foto-adri.jpg",
     },
   ];
 
@@ -91,4 +91,4 @@ class MeetOurTeamPage extends StatelessWidget {
       ),
     );
   }
-}
+} 
