@@ -20,7 +20,7 @@ class _ChooseDatePageState extends State<ChooseDatePage> {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: selectedDateTime ?? DateTime.now(),
-      firstDate: DateTime(2000),
+      firstDate: DateTime.now(), // Set firstDate to today
       lastDate: DateTime(2100),
       builder: (BuildContext context, Widget? child) {
         return Theme(

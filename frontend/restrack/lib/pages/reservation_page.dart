@@ -20,7 +20,15 @@ class ReservationPage extends StatelessWidget {
 
   Future<void> _createReservation(BuildContext context) async {
     try {
-      await reservationService.createReservation(date, day, tableNumber, orderedItems.cast<String>());
+      // Convert orderedItems to a list of maps with menu_id and quantity
+      final List<Map<String, dynamic>> formattedOrderedItems = orderedItems.map((item) {
+        return {
+          'menu_id': item['menu_id'],
+          'quantity': item['qty'],
+        };
+      }).toList();
+
+      await reservationService.createReservation(date, day, tableNumber, formattedOrderedItems);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Reservation created successfully')),
       );
@@ -69,7 +77,7 @@ class ReservationPage extends StatelessWidget {
                 children: [
                   Text('${item['menu']}'),
                   Text('Qty: ${item['qty']}'),
-                  Text('Total: Rp ${item['totalPrice'].toStringAsFixed(2)}'),
+                  Text('Total: Rp ${item['totalPrice'].toInt()}'),
                 ],
               );
             }).toList(),
@@ -84,7 +92,7 @@ class ReservationPage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              'Total Cost: Rp ${(totalCost + 15000).toStringAsFixed(2)}',
+              'Total Cost: Rp ${(totalCost + 15000).toInt()}',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
