@@ -5,6 +5,7 @@ import 'package:restrack/pages/choose_date_page.dart';
 import 'package:restrack/pages/profile_page.dart';
 import 'package:restrack/pages/team_page.dart'; // Import the team page
 import 'package:restrack/services/auth_service.dart';
+import 'package:restrack/services/user_service.dart';
 
 class HomePage extends StatelessWidget {
   final AuthService authService;
@@ -116,7 +117,10 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfilePage(authService: authService),
+                    builder: (context) => ProfilePage(
+                      authService: authService,
+                      userService: UserService(authService: authService),
+                    ),
                   ),
                 );
               },

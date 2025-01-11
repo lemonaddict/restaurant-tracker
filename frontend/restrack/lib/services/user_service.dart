@@ -1,30 +1,66 @@
-// lib/services/user_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:restrack/services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../config/config.dart';
 import '../models/user.dart';
-import 'auth_service.dart';
 
 class UserService {
-  final String baseUrl;
   final AuthService authService;
 
-  UserService({required this.baseUrl, required this.authService});
+  UserService({required this.authService});
 
   Future<User> getCurrentUser() async {
-    try {
-      final headers = await authService.getAuthHeaders();
-      final response = await http.get(
-        Uri.parse('$baseUrl/users/me'),
-        headers: headers,
-      );
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
 
-      if (response.statusCode == 200) {
-        return User.fromJson(json.decode(response.body));
-      } else {
-        throw Exception('Failed to get user data');
-      }
-    } catch (e) {
-      throw Exception('Failed to connect to server: $e');
+    if (token == null) {
+      throw Exception('No token found');
+    }
+
+    final response = await http.get(
+      Uri.parse('${ApiConfig.baseUrl}/users/me'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return User.fromJson(data['user']);
+    } else {
+      throw Exception('Failed to load user profile');
+    }
+  }
+
+  Future<void> updateProfile({
+    required String name,
+    required String email,
+    required String phoneNumber,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+
+    if (token == null) {
+      throw Exception('No token found');
+    }
+
+    final response = await http.put(
+      Uri.parse('${ApiConfig.baseUrl}/users/me'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'name': name,
+        'email': email,
+        'telephone_number': phoneNumber,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update profile');
     }
   }
 }

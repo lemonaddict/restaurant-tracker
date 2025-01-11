@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:restrack/services/auth_service.dart';
-import 'Edit_Profile_Page.dart';
+import '../services/user_service.dart';
+import '../models/user.dart';
+import 'edit_profile_page.dart';
 
 class ProfilePage extends StatefulWidget {
+  final UserService userService;
   final AuthService authService;
-  
+
   const ProfilePage({
     super.key,
+    required this.userService,
     required this.authService,
   });
 
@@ -34,37 +38,47 @@ class _ProfilePageState extends State<ProfilePage> {
         error = null;
       });
 
-      final user = await widget.authService.getCurrentUser();
-      print('User data: $user'); // Debugging statement
+      final user = await widget.userService.getCurrentUser();
+      print('User data loaded: $user'); // Debug loaded user data
 
-      setState(() {
-        userName = user['name'] ?? '';
-        email = user['email'] ?? '';
-        phoneNumber = user['telephone_number'] ?? ''; // Updated to match the API response
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          userName = user.name;
+          email = user.email;
+          phoneNumber = user.phoneNumber;
+          isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        error = 'Failed to load profile: $e';
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          error = 'Failed to load profile: $e';
+          isLoading = false;
+        });
+      }
+      print('Error loading profile: $e'); // Debug error
     }
   }
 
   void _navigateToEditProfile() async {
+    final User currentUser = User(
+      name: userName,
+      email: email,
+      phoneNumber: phoneNumber,
+    );
+
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EditProfilePage(
-          userName: userName,
-          email: email,
-          phoneNumber: phoneNumber,
+          user: currentUser,
+          userService: widget.userService,
         ),
       ),
     );
 
-    if (result != null && mounted) {
-      await _loadUserProfile(); // Reload profile after editing
+    if (result == true && mounted) {
+      await _loadUserProfile();
     }
   }
 
@@ -102,12 +116,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   label,
                   style: const TextStyle(
                     fontSize: 14,
-                    color: Colors.black,
+                    color: Colors.black54,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  value,
+                  value.isNotEmpty ? value : 'Not set',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -143,10 +157,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        error!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.red),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          error!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.red),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
@@ -159,81 +176,86 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 )
-              : SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFFA812F),
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(32),
-                            bottomRight: Radius.circular(32),
+              : RefreshIndicator(
+                  onRefresh: _loadUserProfile,
+                  color: const Color(0xFFFA812F),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFA812F),
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(32),
+                              bottomRight: Radius.circular(32),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 20),
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      spreadRadius: 2,
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: CircleAvatar(
+                                  radius: 60.0,
+                                  backgroundColor: Colors.grey[100],
+                                  child: const Icon(
+                                    Icons.person,
+                                    size: 60.0,
+                                    color: Color(0xFFFA812F),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                            ],
                           ),
                         ),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 20),
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    spreadRadius: 2,
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
+                        Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            children: [
+                              _buildProfileInfo('Name', userName),
+                              _buildProfileInfo('Email', email),
+                              _buildProfileInfo('Phone', phoneNumber),
+                              const SizedBox(height: 32),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: _navigateToEditProfile,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFFA812F),
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
-                                ],
-                              ),
-                              child: CircleAvatar(
-                                radius: 60.0,
-                                backgroundColor: Colors.grey[100],
-                                child: const Icon(
-                                  Icons.person,
-                                  size: 60.0,
-                                  color: Color(0xFFFA812F),
+                                  child: const Text(
+                                    'Edit Profile',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 32),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          children: [
-                            _buildProfileInfo('Name', userName),
-                            _buildProfileInfo('Email', email),
-                            _buildProfileInfo('Phone', phoneNumber),
-                            const SizedBox(height: 32),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _navigateToEditProfile,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFFA812F),
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Edit Profile',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
     );
